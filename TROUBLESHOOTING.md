@@ -1,4 +1,4 @@
-# Corivo World Ground Toolset: troubleshooting
+# Landscape AI Toolsets: troubleshooting
 
 | Symptom | Check |
 | --- | --- |
