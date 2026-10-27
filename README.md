@@ -55,6 +55,9 @@ The [data types](DATA_TYPES.md) describe structured arguments. The [agent guide]
 - One patch actor is added per edit. undo_edit removes that operation; later patches remain in place.
 - The supplied historical integration tests assume a particular landscape and GrassDry layer. Use the documented portable smoke checks in a fresh test map.
 
+
+Cold loading: if a height read reports that the heightmap is not ready, let the level finish loading and retry. The tool refuses to use an empty readback for editing.
+
 ## Validation and release availability
 
 This documentation accompanies release preparation. It is not a claim that Fab has approved this product or that visual, gameplay or performance acceptance is complete. See [VALIDATION.md](VALIDATION.md) for the latest recorded technical checks. Until a Fab product link is added here, this product has no confirmed public purchase link.
