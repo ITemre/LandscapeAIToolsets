@@ -46,7 +46,8 @@ Please set up the "Landscape AI Toolsets" Unreal Engine plugin for me and connec
 - Sample exact world heights in centimetres.
 - Flatten circles or polygons and shape road corridors, smoothing, raises and noise.
 - Paint material layers using circle, path and polygon masks.
-- Undo a tool operation by removing its patch actor and save only relevant dirty packages.
+- Undo a tool operation by removing its patch actor, list the edits that are still in the level and save only relevant dirty packages.
+- Check the level before editing: check_landscape reports readiness, patch and paint layers, and which Landscape is selected.
 
 ## Requirements
 
@@ -57,7 +58,7 @@ Please set up the "Landscape AI Toolsets" Unreal Engine plugin for me and connec
 
 ## Installation and MCP connection
 
-1. Install the product from Fab when available, or copy the purchased `WorldGroundToolset` plugin folder to `<Project>/Plugins/` and build the project with a C++ toolchain supported by UE 5.8.
+1. Install the product from Fab when available, or copy the purchased `WorldGroundToolset` plugin folder to `<Project>/Plugins/`. The package ships Win64 editor binaries for UE 5.8 and the source; a C++ toolchain is only needed if the editor asks to rebuild the plugin.
 2. Enable `WorldGroundToolset` and its dependencies under **Edit > Plugins**, plus **Model Context Protocol**. Restart the editor.
 3. Start the editor's native MCP server with `-ModelContextProtocolStartServer`, or enable auto start under **Project Settings > Plugins > Model Context Protocol**.
 4. Connect your client using Streamable HTTP. The default endpoint is `http://127.0.0.1:8000/mcp`; confirm the port in the editor settings. Keep it on loopback.
@@ -77,22 +78,22 @@ See the [captured runtime schemas](RUNTIME_SCHEMAS.md) for the verified wire-for
 
 ## First workflow
 
-Create a disposable Landscape with edit layers, add the Patches edit layer and ensure all required cells are loaded. Inspect get_landscape_info, sample a centre point, apply a small raise, sample again, undo_edit using the returned edit_id and sample once more. Paint an existing material layer and inspect the result before saving.
+Create a disposable Landscape and make sure the cells you want to edit are loaded. Call check_landscape and fix anything it lists, then get_landscape_info, sample a centre point, apply a small raise, sample again, undo_edit using the returned edit_id and sample once more. Paint an existing material layer and inspect the result before saving. list_edits shows every edit that is still in the level, also after a restart.
 
 The [data types](DATA_TYPES.md) describe structured arguments. The [agent guide](AI_AGENT_HANDOFF.md) includes a setup prompt and working rules. The [tool reference](TOOL_REFERENCE.md) documents every exposed operation. Read [troubleshooting](TROUBLESHOOTING.md) before using the tools on production content.
 
 ## Limitations
 
-- Requires a fully loaded, axis-aligned Landscape with edit layers and a Landscape Patch edit layer named Patches.
-- Uses the first loaded Landscape actor. Work with one target Landscape in the level.
+- Requires a fully loaded, axis-aligned Landscape. The edits go to a Landscape Patch edit layer; any existing patch edit layer is used, whatever its name, and the first edit creates one named Patches when there is none.
+- Works on one Landscape at a time: the first loaded one, or the one chosen with select_landscape when the level holds several.
 - The Landscape material must already expose the paint layers you want to use. No Landscape, material or paint-layer assets are included.
 - The tool generates /Game/WorldGround/BP_GroundPatch on first use. This asset is created in your project and must remain with the edited level.
 - Large reads export the whole Landscape heightmap to a float render target. Batch related edits and verify memory use on your own landscape.
 - One patch actor is added per edit. undo_edit removes that operation; later patches remain in place.
-- The supplied historical integration tests assume a particular landscape and GrassDry layer. Use the documented portable smoke checks in a fresh test map.
+- The bundled integration tests run on whatever Landscape is loaded (centre of the landscape, first paint layer of its material) and undo their edits. Run them in a disposable test map, not on production content.
 
 
-Cold loading: if a height read reports that the heightmap is not ready, let the level finish loading and retry. The tool refuses to use an empty readback for editing.
+Cold loading: if a height read reports that the readback returned no data, let the level finish loading and retry, or check that the region lies on the loaded part of the selected landscape. check_landscape shows both. The tool refuses to use an empty readback for editing.
 
 ## Validation and release availability
 

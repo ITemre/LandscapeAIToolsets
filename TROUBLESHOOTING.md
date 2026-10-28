@@ -9,6 +9,10 @@
 | An argument is rejected | Refresh `describe_toolset` and follow its runtime schema. |
 | Assets or classes are missing | Supply the required project assets and enable the engine dependency that owns the class. |
 | An operation succeeds but looks wrong | Inspect it in the editor and undo or restore your duplicate/backup before continuing. |
+| `check_landscape` reports no readback data | Let the level finish loading, make sure the cells you edit are loaded, then call it again. |
+| The wrong Landscape is edited | Several Landscapes are loaded. Call `select_landscape` with the actor label from the outliner. |
+| `undo_edit` says there is no such edit | Call `list_edits`: the patch actor was deleted or renamed, or lies in a level that is not loaded. |
+| The patch lands on an unexpected edit layer | The tools use the first Landscape Patch edit layer of the selected landscape (shown by `get_landscape_info`); create one named Patches before the first edit if you want that name. |
 
 ## Before filing an issue
 
@@ -16,4 +20,4 @@ Reproduce in a fresh test project, record the minimal operation sequence, and in
 
 ## First smoke check
 
-Create a disposable Landscape with edit layers, add the Patches edit layer and ensure all required cells are loaded. Inspect get_landscape_info, sample a centre point, apply a small raise, sample again, undo_edit using the returned edit_id and sample once more. Paint an existing material layer and inspect the result before saving.
+Create a disposable Landscape and make sure the cells you want to edit are loaded. Call check_landscape and fix anything it lists, then get_landscape_info, sample a centre point, apply a small raise, sample again, undo_edit using the returned edit_id and sample once more. Paint an existing material layer and inspect the result before saving. list_edits shows every edit that is still in the level, also after a restart.

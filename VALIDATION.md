@@ -1,10 +1,21 @@
 # Validation status
 
-Practical checks recorded on 27 October 2026, using Unreal Engine 5.8.4 / Win64 in isolated local projects. Production projects and the original backup ZIPs were unchanged.
+Practical checks recorded on 27 and 28 October 2026, using Unreal Engine 5.8.4 / Win64 in isolated local projects. Production projects and the original backup ZIPs were unchanged.
 
-## Technical and practical checks
+## Version 1.0.1 (28 October 2026)
 
 - Clean Win64 BuildPlugin with strict includes: passed.
+- Buyer install path: the release ZIP was unpacked into a fresh Blueprint-only project; the editor loaded the prebuilt binaries without recompiling, registered the toolset and answered `list_toolsets`, `describe_toolset` and tool calls over the native MCP server.
+- Fresh landscape without any patch edit layer: the first edit created the layer `Patches`, the 300 cm raise was confirmed by an independent native read of the merged heightmap, painting set the layer weight to 255, undo restored both.
+- Landscape with a standard (non-patch) edit layer named `Patches`: the edit created the patch layer `Patches1` and bound to it. Version 1.0.0 failed here.
+- Landscape whose patch edit layer is named `MyPatches`: the edit bound to that layer. Version 1.0.0 failed here.
+- Two landscapes in one level: `check_landscape` reports both, an edit outside the selected landscape is rejected with the landscape's extent, and after `select_landscape` the edit changed only the chosen landscape (confirmed by native reads of both). Version 1.0.0 merged both extents and reported a misleading "readback not ready".
+- All 18 bundled integration tests passed on the loaded landscape, with no skipped tests.
+- Full practical workflow repeated on the rebuilt plugin: raise, patch ordering, undo of both patches, paint and paint undo, save, reload (239.84375 cm and weight 255 preserved) and individual undo after reopening.
+- Runtime schema with nine tools captured from the native MCP server.
+
+## Version 1.0.0 (27 October 2026)
+
 - Fresh editor loading, native MCP tool discovery and schema reads: passed.
 - All 15 existing Landscape integration tests passed on a fresh 127 x 127 sample Landscape, with no skipped tests.
 - A 300 cm raise was confirmed both by the public tool and by independent native reads of the merged heightmap.
@@ -16,8 +27,8 @@ Practical checks recorded on 27 October 2026, using Unreal Engine 5.8.4 / Win64 
 
 ## Scope of acceptance
 
-These are reproducible technical and visual smoke checks on the named fixtures. They do not claim exhaustive character compatibility or performance at arbitrary project scale. Mac, Linux, other engine versions, large production Landscapes and all possible third-party rigs are outside the validated scope. Third-party example assets used locally for testing are not included in the product package.
+These are reproducible technical and visual smoke checks on the named fixtures. They do not claim exhaustive compatibility or performance at arbitrary project scale. Mac, Linux, other engine versions, large production Landscapes and World Partition levels with unloaded cells are outside the validated scope. Third-party example assets used locally for testing are not included in the product package.
 
 ## Fab status
 
-Prepared as a release candidate. Product approval, submission and publication are separate from these tests.
+Version 1.0.0 was submitted for review. Version 1.0.1 is prepared as an update; product approval, submission and publication are separate from these tests.

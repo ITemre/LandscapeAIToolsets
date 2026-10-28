@@ -42,10 +42,10 @@ Please set up the "Landscape AI Toolsets" Unreal Engine plugin for me and connec
 
 ## Product-specific constraints
 
-- Requires a fully loaded, axis-aligned Landscape with edit layers and a Landscape Patch edit layer named Patches.
-- Uses the first loaded Landscape actor. Work with one target Landscape in the level.
+- Requires a fully loaded, axis-aligned Landscape. The edits go to a Landscape Patch edit layer; any existing patch edit layer is used, whatever its name, and the first edit creates one named Patches when there is none.
+- Works on one Landscape at a time: the first loaded one, or the one chosen with select_landscape when the level holds several.
 - The Landscape material must already expose the paint layers you want to use. No Landscape, material or paint-layer assets are included.
 - The tool generates /Game/WorldGround/BP_GroundPatch on first use. This asset is created in your project and must remain with the edited level.
 - Large reads export the whole Landscape heightmap to a float render target. Batch related edits and verify memory use on your own landscape.
 - One patch actor is added per edit. undo_edit removes that operation; later patches remain in place.
-- The supplied historical integration tests assume a particular landscape and GrassDry layer. Use the documented portable smoke checks in a fresh test map.
+- The bundled integration tests run on whatever Landscape is loaded (centre of the landscape, first paint layer of its material) and undo their edits. Run them in a disposable test map, not on production content.

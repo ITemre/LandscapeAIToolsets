@@ -1,13 +1,15 @@
 # Data types
 
-These fields come from the plugin source. Query `describe_toolset` for the complete wire schema, including required fields and engine-reflected types.
+These fields come from the plugin source (version 1.0.1). Query `describe_toolset` for the complete wire schema, including required fields and engine-reflected types.
 
 ## LandscapeInfo
 
-Extent and calibration of the level's landscape. All lengths in cm.
+Extent and calibration of the selected landscape. All lengths in cm.
 
 | Field | Python declaration |
 | --- | --- |
+| `landscape` | `unreal.uproperty(str, meta={'ToolTip': 'Actor label of the Landscape the tools work on.'})` |
+| `landscape_count` | `unreal.uproperty(int, meta={'ToolTip': 'Loaded Landscape actors in the level. Use select_landscape when more than one.'})` |
 | `min_x` | `unreal.uproperty(float)` |
 | `min_y` | `unreal.uproperty(float)` |
 | `max_x` | `unreal.uproperty(float)` |
@@ -16,9 +18,45 @@ Extent and calibration of the level's landscape. All lengths in cm.
 | `base_z` | `unreal.uproperty(float, meta={'ToolTip': "World Z of a texel at the landscape's zero height."})` |
 | `min_z` | `unreal.uproperty(float, meta={'ToolTip': 'Lowest world Z the heightmap can store.'})` |
 | `max_z` | `unreal.uproperty(float, meta={'ToolTip': 'Highest world Z the heightmap can store.'})` |
-| `proxy_count` | `unreal.uproperty(int, meta={'ToolTip': 'Loaded landscape proxies (World Partition cells).'})` |
+| `proxy_count` | `unreal.uproperty(int, meta={'ToolTip': 'Loaded proxies of this landscape (World Partition cells).'})` |
 | `material` | `unreal.uproperty(str)` |
 | `paint_layers` | `unreal.uproperty(unreal.Array(str))` |
+| `patch_layer` | `unreal.uproperty(str, meta={'ToolTip': 'Landscape Patch edit layer the edits go to. Empty until the first edit creates one.'})` |
+| `edit_layers` | `unreal.uproperty(unreal.Array(str), meta={'ToolTip': 'All edit layers as "name (class)", in layer order.'})` |
+
+## LandscapeCheck
+
+Result of check_landscape: whether the level is ready for edits, and what to fix if not.
+
+| Field | Python declaration |
+| --- | --- |
+| `ready` | `unreal.uproperty(bool, meta={'ToolTip': 'True when edits can run right away.'})` |
+| `landscape` | `unreal.uproperty(str)` |
+| `landscape_count` | `unreal.uproperty(int)` |
+| `proxy_count` | `unreal.uproperty(int)` |
+| `patch_layer` | `unreal.uproperty(str, meta={'ToolTip': 'Existing Landscape Patch edit layer, or empty when the first edit will create one.'})` |
+| `paint_layers` | `unreal.uproperty(unreal.Array(str))` |
+| `readback_ready` | `unreal.uproperty(bool, meta={'ToolTip': 'A height read at the landscape centre returned real data.'})` |
+| `play_in_editor` | `unreal.uproperty(bool, meta={'ToolTip': 'True while Play-In-Editor runs; edits are refused then.'})` |
+| `edits` | `unreal.uproperty(int, meta={'ToolTip': 'Patch actors of this toolset in the level, see list_edits.'})` |
+| `issues` | `unreal.uproperty(unreal.Array(str), meta={'ToolTip': 'Blocking problems. Empty when ready.'})` |
+| `notes` | `unreal.uproperty(unreal.Array(str), meta={'ToolTip': 'Non-blocking hints.'})` |
+
+## EditInfo
+
+One edit of this toolset that is loaded in the level: a height or paint patch actor.
+
+| Field | Python declaration |
+| --- | --- |
+| `edit_id` | `unreal.uproperty(str, meta={'ToolTip': 'Pass to undo_edit.'})` |
+| `kind` | `unreal.uproperty(str, meta={'ToolTip': 'height or paint.'})` |
+| `actor` | `unreal.uproperty(str, meta={'ToolTip': 'Actor label in the outliner.'})` |
+| `layer` | `unreal.uproperty(str, meta={'ToolTip': 'Edit layer the patch is bound to; "-Null-" means unbound.'})` |
+| `priority` | `unreal.uproperty(float, meta={'ToolTip': 'Higher applies later (on top).'})` |
+| `min_x` | `unreal.uproperty(float)` |
+| `min_y` | `unreal.uproperty(float)` |
+| `max_x` | `unreal.uproperty(float)` |
+| `max_y` | `unreal.uproperty(float)` |
 
 ## TerrainOp
 
@@ -43,6 +81,8 @@ noise: points[0] centre, radius, amount (+- cm), wavelength, seed.
 | `wavelength` | `unreal.uproperty(float)` |
 | `seed` | `unreal.uproperty(int)` |
 | `iterations` | `unreal.uproperty(int)` |
+
+All numbers must be finite; non-finite values are rejected before anything is written.
 
 ## PaintOp
 
@@ -78,5 +118,4 @@ What an edit changed.
 
 ## Reading structured arguments
 
-For Landscape height operations, `points` contains world-space vectors in centimetres and `kind` selects the relevant fields. Fields that do not apply to that kind are ignored. For paint operations, choose a material layer returned by `get_landscape_info`; the `shape` selects circle, path or polygon. A dry run in Asset Copy reports the same copy plan without performing the copy.
-
+For Landscape height operations, `points` contains world-space vectors in centimetres and `kind` selects the relevant fields. Fields that do not apply to that kind are ignored. For paint operations, choose a material layer returned by `get_landscape_info`; the `shape` selects circle, path or polygon. Call `check_landscape` before the first edit of a session and `list_edits` to find the ids of edits made earlier, for example before an editor restart.
