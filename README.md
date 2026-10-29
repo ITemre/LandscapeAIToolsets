@@ -90,7 +90,6 @@ The [data types](DATA_TYPES.md) describe structured arguments. The [agent guide]
 - The tool generates /Game/WorldGround/BP_GroundPatch on first use. This asset is created in your project and must remain with the edited level.
 - Large reads export the whole Landscape heightmap to a float render target. Batch related edits and verify memory use on your own landscape.
 - One patch actor is added per edit. undo_edit removes that operation; later patches remain in place.
-- The bundled integration tests run on whatever Landscape is loaded (centre of the landscape, first paint layer of its material) and undo their edits. Run them in a disposable test map, not on production content.
 
 
 Cold loading: if a height read reports that the readback returned no data, let the level finish loading and retry, or check that the region lies on the loaded part of the selected landscape. check_landscape shows both. The tool refuses to use an empty readback for editing.

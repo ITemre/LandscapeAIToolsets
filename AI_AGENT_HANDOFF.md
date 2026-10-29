@@ -48,4 +48,3 @@ Please set up the "Landscape AI Toolsets" Unreal Engine plugin for me and connec
 - The tool generates /Game/WorldGround/BP_GroundPatch on first use. This asset is created in your project and must remain with the edited level.
 - Large reads export the whole Landscape heightmap to a float render target. Batch related edits and verify memory use on your own landscape.
 - One patch actor is added per edit. undo_edit removes that operation; later patches remain in place.
-- The bundled integration tests run on whatever Landscape is loaded (centre of the landscape, first paint layer of its material) and undo their edits. Run them in a disposable test map, not on production content.

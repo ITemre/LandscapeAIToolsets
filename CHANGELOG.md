@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Package for the Fab technical review: source only, without `Binaries` (Fab compiles the plugin), and without `Documentation/LICENSE.md`. The plugin is covered by the Fab Standard License alone.
+- Pure plugin: internal test code (automation tests, Python test suites and test runners) is no longer shipped. No levels or sample assets are included.
+
 ## 1.0.1
 
 - Patches bind to the selected Landscape and to its Landscape Patch edit layer explicitly. Any existing patch edit layer is used, whatever its name; when there is none, one named Patches is created. Before, edits failed on landscapes whose patch layer was not called Patches, or when a standard edit layer already used that name.
